@@ -129,6 +129,10 @@ async function ensureFFmpegLoaded() {
 function getPresetOptions() {
   const mode = preset.value;
 
+  if (mode === "waybill") {
+    return { scale: "1280:-2", bitrate: "3200k", audio: "96k" };
+  }
+
   if (mode === "light") {
     return { scale: "1280:-2", bitrate: "2200k", audio: "128k" };
   }

@@ -7,148 +7,149 @@
     <script type="module" src="/src/main.js"></script>
   </head>
   <body>
-    <div class="page-shell">
-      <div class="bg-orb bg-orb-1"></div>
-      <div class="bg-orb bg-orb-2"></div>
+    <main class="app">
+      <section class="hero">
+        <div class="hero-badge">Simple • Fast • Browser-based</div>
+        <h1>JCO Video Size Compressor</h1>
+        <p class="hero-text">
+          Compress, preview, adjust playback speed, and download your final video
+          in a clean and easy workflow.
+        </p>
+      </section>
 
-      <main class="wrap">
-        <section class="hero">
-          <div class="hero-badge">Fast • Simple • Browser-based</div>
-          <h1>JCO Video Size Compressor</h1>
-          <p class="sub">
-            Compress videos directly in the browser with a cleaner, easier workflow.
-            No upload required for the MVP.
-          </p>
-        </section>
-
-        <section class="grid">
-          <div class="card card-primary stack">
-            <div class="section-head">
-              <div>
-                <h2>Upload video</h2>
-                <p>Select a file and choose how much you want to compress it.</p>
-              </div>
-            </div>
-
-            <div id="dropzone" class="dropzone">
-              <input id="fileInput" type="file" accept="video/*" />
-              <div class="drop-icon">⬆</div>
-              <div class="drop-title">Drop a video here</div>
-              <div class="drop-sub">or choose a file from your device</div>
-              <button class="btn" id="chooseBtn" type="button">Choose Video</button>
-            </div>
-
-            <div class="stack">
-              <div>
-                <label for="preset">Compression preset</label>
-                <select id="preset">
-                  <option value="light">Light compression (best quality)</option>
-                  <option value="balanced" selected>Balanced compression</option>
-                  <option value="strong">Strong compression (smaller size)</option>
-                  <option value="custom">Custom bitrate</option>
-                </select>
-              </div>
-
-              <div id="customWrap" style="display:none;">
-                <label for="bitrate">Custom video bitrate (kbps)</label>
-                <input id="bitrate" type="number" min="250" max="12000" value="1800" />
-              </div>
-
-              <div>
-                <label for="speed">Playback speed</label>
-                <select id="speed">
-                  <option value="0.5">0.5x</option>
-                  <option value="0.75">0.75x</option>
-                  <option value="1" selected>1.0x (Normal)</option>
-                  <option value="1.25">1.25x</option>
-                  <option value="1.5">1.5x</option>
-                  <option value="2">2.0x</option>
-                  <option value="3">3.0x</option>
-                </select>
-              </div>
-
-              <div class="helper-box">
-                Recommended:
-                <strong>Balanced compression</strong> for general use,
-                <strong>Strong compression</strong> for smaller sharing size.
-                You can also change the <strong>playback speed</strong> before downloading.
-              </div>
-
-              <div class="row action-row">
-                <button id="compressBtn" type="button" disabled>Compress Video</button>
-                <button id="resetBtn" class="btn-secondary" type="button">Reset</button>
-              </div>
+      <section class="layout">
+        <div class="panel panel-main">
+          <div class="panel-header">
+            <div>
+              <h2>Upload & Settings</h2>
+              <p>Select your file and choose the compression options.</p>
             </div>
           </div>
 
-          <div class="card stack">
-            <div class="section-head">
-              <div>
-                <h2>Compression result</h2>
-                <p>Track the file size reduction, preview the output, and download the final video.</p>
-              </div>
-              <div class="pill">Ready for Vercel</div>
+          <div id="dropzone" class="dropzone">
+            <input id="fileInput" type="file" accept="video/*" />
+            <div class="drop-icon">↑</div>
+            <div class="drop-title">Drop your video here</div>
+            <div class="drop-subtitle">or choose a file from your device</div>
+            <button class="btn btn-primary" id="chooseBtn" type="button">Choose Video</button>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="preset">Compression preset</label>
+              <select id="preset">
+                <option value="waybill" selected>Waybill / High Readability</option>
+                <option value="light">Light compression (best quality)</option>
+                <option value="balanced">Balanced compression</option>
+                <option value="strong">Strong compression (smaller size)</option>
+                <option value="custom">Custom bitrate</option>
+              </select>
             </div>
 
-            <div class="meta">
-              <div class="meta-item">
-                <span>Selected file</span>
-                <strong id="fileName">None</strong>
-              </div>
-              <div class="meta-item">
-                <span>Original size</span>
-                <strong id="originalSize">-</strong>
-              </div>
-              <div class="meta-item">
-                <span>Compressed size</span>
-                <strong id="compressedSize">-</strong>
-              </div>
-              <div class="meta-item">
-                <span>Reduction</span>
-                <strong id="reduction">-</strong>
-              </div>
+            <div id="customWrap" class="field" style="display:none;">
+              <label for="bitrate">Custom bitrate (kbps)</label>
+              <input id="bitrate" type="number" min="250" max="12000" value="1800" />
             </div>
 
-            <div>
-              <label>Preview</label>
-              <video
-                id="previewVideo"
-                class="preview-video"
-                controls
-                playsinline
-                preload="metadata"
-              ></video>
-            </div>
-
-            <div>
-              <label>Progress</label>
-              <div class="progress">
-                <div id="progressBar"></div>
-              </div>
-              <div id="progressText" class="progress-text">Idle</div>
-            </div>
-
-            <div>
-              <label>Activity log</label>
-              <div id="log" class="log">Ready.</div>
-            </div>
-
-            <div class="row">
-              <a id="downloadLink" class="btn download-btn" style="display:none;" download="compressed.mp4">
-                Download Compressed Video
-              </a>
-            </div>
-
-            <div class="info-note">
-              Large videos may be slower on low-memory devices because compression runs inside the browser.
+            <div class="field">
+              <label for="speed">Playback speed</label>
+              <select id="speed">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1.0x (Normal)</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2.0x</option>
+                <option value="3">3.0x</option>
+              </select>
             </div>
           </div>
-        </section>
 
-        <footer class="footer">
-          <div class="credit">Developed by IT John Mark ❤️</div>
-        </footer>
-      </main>
-    </div>
+          <div class="tip-box">
+            Best for labels and text-heavy clips:
+            <strong>Waybill / High Readability</strong>.
+          </div>
+
+          <div class="button-row">
+            <button id="compressBtn" class="btn btn-primary" type="button" disabled>
+              Compress Video
+            </button>
+            <button id="resetBtn" class="btn btn-secondary" type="button">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="panel panel-side">
+          <div class="panel-header">
+            <div>
+              <h2>Result</h2>
+              <p>Preview your processed video before downloading.</p>
+            </div>
+            <div class="status-pill">Ready for Vercel</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span>Selected file</span>
+              <strong id="fileName">None</strong>
+            </div>
+            <div class="stat-card">
+              <span>Original size</span>
+              <strong id="originalSize">-</strong>
+            </div>
+            <div class="stat-card">
+              <span>Compressed size</span>
+              <strong id="compressedSize">-</strong>
+            </div>
+            <div class="stat-card">
+              <span>Reduction</span>
+              <strong id="reduction">-</strong>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Preview</label>
+            <video
+              id="previewVideo"
+              class="preview-video"
+              controls
+              playsinline
+              preload="metadata"
+            ></video>
+          </div>
+
+          <div class="field">
+            <label>Progress</label>
+            <div class="progress-track">
+              <div id="progressBar" class="progress-fill"></div>
+            </div>
+            <div id="progressText" class="progress-text">Idle</div>
+          </div>
+
+          <div class="field">
+            <label>Activity log</label>
+            <div id="log" class="log">Ready.</div>
+          </div>
+
+          <a
+            id="downloadLink"
+            class="btn btn-primary download-btn"
+            style="display:none;"
+            download="compressed.mp4"
+          >
+            Download Compressed Video
+          </a>
+
+          <div class="note">
+            Large videos may take longer because processing runs inside the browser.
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="credit">Developed by IT John Mark ❤️</div>
+      </footer>
+    </main>
   </body>
 </html>
