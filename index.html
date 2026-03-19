@@ -1,501 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Company Video Size Compressor</title>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #121933;
-      --panel-2: #1a2347;
-      --text: #eef2ff;
-      --muted: #9fb0d9;
-      --accent: #6ea8fe;
-      --good: #56d364;
-      --warn: #ffb86c;
-      --danger: #ff6b6b;
-      --border: rgba(255,255,255,.08);
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Video Size Compressor</title>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Company Video Size Compressor</h1>
+      <div class="sub">
+        Compress videos directly in the browser. No upload required for the MVP. Good for internal use and easy to host on Vercel.
+      </div>
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, Arial, sans-serif;
-      background: linear-gradient(180deg, #0a0f1e 0%, #0d1430 100%);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .wrap {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 32px 18px 48px;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 32px;
-      line-height: 1.1;
-    }
-
-    .sub {
-      color: var(--muted);
-      margin-bottom: 24px;
-      font-size: 15px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 18px;
-    }
-
-    .card {
-      background: rgba(18, 25, 51, .92);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-      backdrop-filter: blur(12px);
-    }
-
-    .dropzone {
-      border: 2px dashed rgba(255,255,255,.18);
-      border-radius: 18px;
-      padding: 28px;
-      text-align: center;
-      transition: .2s ease;
-      background: rgba(255,255,255,.02);
-    }
-
-    .dropzone.drag {
-      border-color: var(--accent);
-      background: rgba(110,168,254,.08);
-    }
-
-    .dropzone input { display: none; }
-
-    .btn, button, select {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-    }
-
-    .btn, button {
-      background: var(--accent);
-      color: #081120;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    button[disabled] {
-      opacity: .55;
-      cursor: not-allowed;
-    }
-
-    .btn-secondary {
-      background: #24345f;
-      color: var(--text);
-    }
-
-    .row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .stack { display: grid; gap: 12px; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    select, input[type="number"] {
-      width: 100%;
-      background: #0e1735;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .meta {
-      display: grid;
-      gap: 8px;
-      font-size: 14px;
-    }
-
-    .meta span { color: var(--muted); }
-
-    .progress {
-      width: 100%;
-      height: 12px;
-      background: #0e1735;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .progress > div {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #6ea8fe, #56d364);
-      transition: width .15s ease;
-    }
-
-    .log {
-      background: #081120;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      color: #c9d7ff;
-      font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      min-height: 130px;
-      max-height: 240px;
-      overflow: auto;
-      white-space: pre-wrap;
-    }
-
-    .pill {
-      display: inline-flex;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(86, 211, 100, .12);
-      color: #9ef0a7;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .warn {
-      color: var(--warn);
-      font-size: 13px;
-    }
-
-    .footer {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    a { color: #9cc2ff; }
-
-    @media (max-width: 860px) {
-      .grid { grid-template-columns: 1fr; }
-      h1 { font-size: 28px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1>Company Video Size Compressor</h1>
-    <div class="sub">
-      Compress videos directly in the browser. No upload required for the MVP. Good for internal use and easy to host on Vercel.
-    </div>
-
-    <div class="grid">
-      <div class="card stack">
-        <div id="dropzone" class="dropzone">
-          <input id="fileInput" type="file" accept="video/*" />
-          <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Drop a video here</div>
-          <div style="color:var(--muted);margin-bottom:14px;">or choose a file from your device</div>
-          <button class="btn" id="chooseBtn" type="button">Choose Video</button>
-        </div>
-
-        <div class="stack">
-          <div>
-            <label for="preset">Compression preset</label>
-            <select id="preset">
-              <option value="light">Light compression (best quality)</option>
-              <option value="balanced" selected>Balanced compression</option>
-              <option value="strong">Strong compression (smaller size)</option>
-              <option value="custom">Custom bitrate</option>
-            </select>
+      <div class="grid">
+        <div class="card stack">
+          <div id="dropzone" class="dropzone">
+            <input id="fileInput" type="file" accept="video/*" />
+            <div class="drop-title">Drop a video here</div>
+            <div class="drop-sub">or choose a file from your device</div>
+            <button class="btn" id="chooseBtn" type="button">Choose Video</button>
           </div>
 
-          <div id="customWrap" style="display:none;">
-            <label for="bitrate">Custom video bitrate (kbps)</label>
-            <input id="bitrate" type="number" min="250" max="12000" value="1800" />
+          <div class="stack">
+            <div>
+              <label for="preset">Compression preset</label>
+              <select id="preset">
+                <option value="light">Light compression (best quality)</option>
+                <option value="balanced" selected>Balanced compression</option>
+                <option value="strong">Strong compression (smaller size)</option>
+                <option value="custom">Custom bitrate</option>
+              </select>
+            </div>
+
+            <div id="customWrap" style="display:none;">
+              <label for="bitrate">Custom video bitrate (kbps)</label>
+              <input id="bitrate" type="number" min="250" max="12000" value="1800" />
+            </div>
+
+            <div class="row">
+              <button id="compressBtn" type="button" disabled>Compress Video</button>
+              <button id="resetBtn" class="btn-secondary" type="button">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card stack">
+          <div class="pill">Vite app • Vercel-ready</div>
+
+          <div class="meta">
+            <div><span>Selected file:</span> <strong id="fileName">None</strong></div>
+            <div><span>Original size:</span> <strong id="originalSize">-</strong></div>
+            <div><span>Compressed size:</span> <strong id="compressedSize">-</strong></div>
+            <div><span>Reduction:</span> <strong id="reduction">-</strong></div>
+          </div>
+
+          <div>
+            <label>Progress</label>
+            <div class="progress"><div id="progressBar"></div></div>
+            <div id="progressText" class="progress-text">Idle</div>
+          </div>
+
+          <div>
+            <label>Activity log</label>
+            <div id="log" class="log">Ready.</div>
           </div>
 
           <div class="row">
-            <button id="compressBtn" type="button" disabled>Compress Video</button>
-            <button id="resetBtn" class="btn-secondary" type="button">Reset</button>
+            <a id="downloadLink" class="btn" style="display:none;" download="compressed.mp4">Download Compressed Video</a>
+          </div>
+
+          <div class="warn">
+            Large videos may be slow on low-memory devices because compression runs inside the browser.
           </div>
         </div>
       </div>
 
-      <div class="card stack">
-        <div class="pill">Static app • Vercel-ready</div>
-        <div class="meta">
-          <div><span>Selected file:</span> <strong id="fileName">None</strong></div>
-          <div><span>Original size:</span> <strong id="originalSize">-</strong></div>
-          <div><span>Compressed size:</span> <strong id="compressedSize">-</strong></div>
-          <div><span>Reduction:</span> <strong id="reduction">-</strong></div>
-        </div>
-
-        <div>
-          <label>Progress</label>
-          <div class="progress"><div id="progressBar"></div></div>
-          <div id="progressText" style="margin-top:8px;color:var(--muted);font-size:13px;">Idle</div>
-        </div>
-
-        <div>
-          <label>Activity log</label>
-          <div id="log" class="log">Ready.</div>
-        </div>
-
-        <div class="row">
-          <a id="downloadLink" style="display:none;" class="btn" download="compressed.mp4">Download Compressed Video</a>
-        </div>
-
-        <div class="warn">
-          Large videos may be slow on low-memory devices because compression runs inside the browser.
-        </div>
+      <div class="footer">
+        Optional later: Supabase for login, audit logs, upload history, or cloud storage. Not required for version 1.
       </div>
     </div>
-
-    <div class="footer">
-      Optional later: Supabase for login, audit logs, upload history, or cloud storage. Not required for version 1.
-    </div>
-  </div>
-
-  <script type="module">
-    import { FFmpeg } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
-    import { fetchFile, toBlobURL } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js';
-
-    const fileInput = document.getElementById('fileInput');
-    const chooseBtn = document.getElementById('chooseBtn');
-    const dropzone = document.getElementById('dropzone');
-    const preset = document.getElementById('preset');
-    const bitrateInput = document.getElementById('bitrate');
-    const customWrap = document.getElementById('customWrap');
-    const compressBtn = document.getElementById('compressBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const fileNameEl = document.getElementById('fileName');
-    const originalSizeEl = document.getElementById('originalSize');
-    const compressedSizeEl = document.getElementById('compressedSize');
-    const reductionEl = document.getElementById('reduction');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const logEl = document.getElementById('log');
-    const downloadLink = document.getElementById('downloadLink');
-
-    let ffmpeg = null;
-    let selectedFile = null;
-    let compressedBlobUrl = null;
-
-    function log(message) {
-      logEl.textContent += `\n${message}`;
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    function formatBytes(bytes) {
-      if (!bytes && bytes !== 0) return '-';
-      const units = ['B', 'KB', 'MB', 'GB'];
-      let i = 0;
-      let num = bytes;
-      while (num >= 1024 && i < units.length - 1) {
-        num /= 1024;
-        i++;
-      }
-      return `${num.toFixed(num >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
-    }
-
-    function setProgress(value, text) {
-      const percent = Math.max(0, Math.min(100, value));
-      progressBar.style.width = `${percent}%`;
-      progressText.textContent = text || `${percent.toFixed(0)}%`;
-    }
-
-    function setSelectedFile(file) {
-      selectedFile = file;
-      fileNameEl.textContent = file ? file.name : 'None';
-      originalSizeEl.textContent = file ? formatBytes(file.size) : '-';
-      compressedSizeEl.textContent = '-';
-      reductionEl.textContent = '-';
-      compressBtn.disabled = !file;
-      downloadLink.style.display = 'none';
-      if (compressedBlobUrl) {
-        URL.revokeObjectURL(compressedBlobUrl);
-        compressedBlobUrl = null;
-      }
-      if (file) log(`Selected file: ${file.name} (${formatBytes(file.size)})`);
-    }
-
-    async function ensureFFmpegLoaded() {
-      if (ffmpeg) return ffmpeg;
-
-      log('Loading FFmpeg core...');
-      setProgress(5, 'Loading FFmpeg...');
-
-      ffmpeg = new FFmpeg();
-      ffmpeg.on('log', ({ message }) => {
-        if (message && /time=|Duration:|video:/i.test(message)) log(message);
-      });
-      ffmpeg.on('progress', ({ progress }) => {
-        const pct = 10 + (progress * 85);
-        setProgress(pct, `Compressing... ${Math.round(progress * 100)}%`);
-      });
-
-      const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
-      await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm')
-      });
-
-      log('FFmpeg loaded.');
-      setProgress(10, 'FFmpeg ready');
-      return ffmpeg;
-    }
-
-    function getPresetOptions() {
-      const mode = preset.value;
-      if (mode === 'light') {
-        return { scale: '1280:-2', bitrate: '2200k', audio: '128k' };
-      }
-      if (mode === 'strong') {
-        return { scale: '854:-2', bitrate: '950k', audio: '96k' };
-      }
-      if (mode === 'custom') {
-        const kbps = Math.max(250, Number(bitrateInput.value || 1800));
-        return { scale: '1280:-2', bitrate: `${kbps}k`, audio: '96k' };
-      }
-      return { scale: '1280:-2', bitrate: '1500k', audio: '128k' };
-    }
-
-    async function compressVideo() {
-      if (!selectedFile) return;
-
-      compressBtn.disabled = true;
-      chooseBtn.disabled = true;
-      fileInput.disabled = true;
-      preset.disabled = true;
-      bitrateInput.disabled = true;
-
-      try {
-        await ensureFFmpegLoaded();
-        log('Preparing file...');
-        setProgress(12, 'Preparing file...');
-
-        const inputName = 'input-video';
-        const outputName = 'compressed-output.mp4';
-        const ext = (selectedFile.name.split('.').pop() || '').toLowerCase();
-        const finalInputName = ext ? `${inputName}.${ext}` : inputName;
-
-        await ffmpeg.writeFile(finalInputName, await fetchFile(selectedFile));
-
-        const opts = getPresetOptions();
-        log(`Using preset: ${preset.value}, bitrate ${opts.bitrate}, audio ${opts.audio}, scale ${opts.scale}`);
-
-        await ffmpeg.exec([
-          '-i', finalInputName,
-          '-vf', `scale=${opts.scale}`,
-          '-c:v', 'libx264',
-          '-preset', 'veryfast',
-          '-b:v', opts.bitrate,
-          '-maxrate', opts.bitrate,
-          '-bufsize', '2M',
-          '-c:a', 'aac',
-          '-b:a', opts.audio,
-          '-movflags', '+faststart',
-          '-pix_fmt', 'yuv420p',
-          '-y',
-          outputName
-        ]);
-
-        setProgress(97, 'Finalizing...');
-        log('Reading compressed file...');
-
-        const data = await ffmpeg.readFile(outputName);
-        const blob = new Blob([data.buffer], { type: 'video/mp4' });
-        compressedBlobUrl = URL.createObjectURL(blob);
-
-        downloadLink.href = compressedBlobUrl;
-        downloadLink.download = `${selectedFile.name.replace(/\.[^.]+$/, '') || 'video'}-compressed.mp4`;
-        downloadLink.style.display = 'inline-flex';
-
-        compressedSizeEl.textContent = formatBytes(blob.size);
-        const saved = selectedFile.size - blob.size;
-        const reduction = selectedFile.size > 0
-          ? `${((saved / selectedFile.size) * 100).toFixed(1)}%`
-          : '-';
-        reductionEl.textContent = reduction;
-
-        setProgress(100, 'Done');
-        log(`Compression done. Output size: ${formatBytes(blob.size)}. Saved: ${formatBytes(saved > 0 ? saved : 0)}.`);
-      } catch (error) {
-        console.error(error);
-        log(`Error: ${error.message || error}`);
-        setProgress(0, 'Failed');
-        alert('Compression failed. Check the activity log for details.');
-      } finally {
-        compressBtn.disabled = !selectedFile;
-        chooseBtn.disabled = false;
-        fileInput.disabled = false;
-        preset.disabled = false;
-        bitrateInput.disabled = false;
-      }
-    }
-
-    chooseBtn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (file) setSelectedFile(file);
-    });
-
-    preset.addEventListener('change', () => {
-      customWrap.style.display = preset.value === 'custom' ? 'block' : 'none';
-    });
-
-    compressBtn.addEventListener('click', compressVideo);
-
-    resetBtn.addEventListener('click', () => {
-      selectedFile = null;
-      fileInput.value = '';
-      fileNameEl.textContent = 'None';
-      originalSizeEl.textContent = '-';
-      compressedSizeEl.textContent = '-';
-      reductionEl.textContent = '-';
-      progressBar.style.width = '0%';
-      progressText.textContent = 'Idle';
-      logEl.textContent = 'Ready.';
-      downloadLink.style.display = 'none';
-      compressBtn.disabled = true;
-      if (compressedBlobUrl) {
-        URL.revokeObjectURL(compressedBlobUrl);
-        compressedBlobUrl = null;
-      }
-    });
-
-    ['dragenter', 'dragover'].forEach(evt => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.add('drag');
-      });
-    });
-
-    ['dragleave', 'drop'].forEach(evt => {
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.remove('drag');
-      });
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-      const file = e.dataTransfer?.files?.[0];
-      if (file && file.type.startsWith('video/')) {
-        setSelectedFile(file);
-      } else {
-        alert('Please drop a valid video file.');
-      }
-    });
-  </script>
-</body>
+  </body>
 </html>
