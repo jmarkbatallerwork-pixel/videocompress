@@ -439,3 +439,12 @@ input[type="number"]:focus {
     justify-content: center;
   }
 }
+
+.preview-video {
+  width: 100%;
+  border-radius: 18px;
+  background: #dfeeff;
+  border: 1px solid rgba(47, 128, 237, 0.14);
+  min-height: 220px;
+  max-height: 360px;
+}

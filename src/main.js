@@ -8,6 +8,8 @@ const dropzone = document.getElementById("dropzone");
 const preset = document.getElementById("preset");
 const bitrateInput = document.getElementById("bitrate");
 const customWrap = document.getElementById("customWrap");
+const speedSelect = document.getElementById("speed");
+const previewVideo = document.getElementById("previewVideo");
 const compressBtn = document.getElementById("compressBtn");
 const resetBtn = document.getElementById("resetBtn");
 const fileNameEl = document.getElementById("fileName");
@@ -22,6 +24,7 @@ const downloadLink = document.getElementById("downloadLink");
 let ffmpeg = null;
 let selectedFile = null;
 let compressedBlobUrl = null;
+let originalBlobUrl = null;
 
 function log(message) {
   logEl.textContent += `\n${message}`;
@@ -46,6 +49,24 @@ function setProgress(value, text) {
   progressText.textContent = text || `${percent.toFixed(0)}%`;
 }
 
+function buildAtempoFilter(speed) {
+  const filters = [];
+  let remaining = speed;
+
+  while (remaining > 2.0) {
+    filters.push("atempo=2.0");
+    remaining /= 2.0;
+  }
+
+  while (remaining < 0.5) {
+    filters.push("atempo=0.5");
+    remaining /= 0.5;
+  }
+
+  filters.push(`atempo=${remaining.toFixed(3)}`);
+  return filters.join(",");
+}
+
 function setSelectedFile(file) {
   selectedFile = file;
   fileNameEl.textContent = file ? file.name : "None";
@@ -60,8 +81,19 @@ function setSelectedFile(file) {
     compressedBlobUrl = null;
   }
 
+  if (originalBlobUrl) {
+    URL.revokeObjectURL(originalBlobUrl);
+    originalBlobUrl = null;
+  }
+
   if (file) {
+    originalBlobUrl = URL.createObjectURL(file);
+    previewVideo.src = originalBlobUrl;
+    previewVideo.load();
     log(`Selected file: ${file.name} (${formatBytes(file.size)})`);
+  } else {
+    previewVideo.removeAttribute("src");
+    previewVideo.load();
   }
 }
 
@@ -121,6 +153,7 @@ async function compressVideo() {
   fileInput.disabled = true;
   preset.disabled = true;
   bitrateInput.disabled = true;
+  speedSelect.disabled = true;
 
   try {
     await ensureFFmpegLoaded();
@@ -136,23 +169,44 @@ async function compressVideo() {
     await ffmpeg.writeFile(finalInputName, await fetchFile(selectedFile));
 
     const opts = getPresetOptions();
-    log(`Using preset: ${preset.value}, bitrate ${opts.bitrate}, audio ${opts.audio}, scale ${opts.scale}`);
+    const speed = Number(speedSelect.value || "1");
 
-    await ffmpeg.exec([
+    log(
+      `Using preset: ${preset.value}, bitrate ${opts.bitrate}, audio ${opts.audio}, scale ${opts.scale}, speed ${speed}x`
+    );
+
+    const videoFilters = [`scale=${opts.scale}`];
+    const audioFilters = [];
+
+    if (speed !== 1) {
+      videoFilters.push(`setpts=${(1 / speed).toFixed(5)}*PTS`);
+      audioFilters.push(buildAtempoFilter(speed));
+    }
+
+    const command = [
       "-i", finalInputName,
-      "-vf", `scale=${opts.scale}`,
+      "-vf", videoFilters.join(","),
       "-c:v", "libx264",
       "-preset", "veryfast",
       "-b:v", opts.bitrate,
       "-maxrate", opts.bitrate,
-      "-bufsize", "2M",
+      "-bufsize", "2M"
+    ];
+
+    if (audioFilters.length > 0) {
+      command.push("-af", audioFilters.join(","));
+    }
+
+    command.push(
       "-c:a", "aac",
       "-b:a", opts.audio,
       "-movflags", "+faststart",
       "-pix_fmt", "yuv420p",
       "-y",
       outputName
-    ]);
+    );
+
+    await ffmpeg.exec(command);
 
     setProgress(97, "Finalizing...");
     log("Reading compressed file...");
@@ -160,6 +214,9 @@ async function compressVideo() {
     const data = await ffmpeg.readFile(outputName);
     const blob = new Blob([data.buffer], { type: "video/mp4" });
     compressedBlobUrl = URL.createObjectURL(blob);
+
+    previewVideo.src = compressedBlobUrl;
+    previewVideo.load();
 
     downloadLink.href = compressedBlobUrl;
     downloadLink.download = `${selectedFile.name.replace(/\.[^.]+$/, "") || "video"}-compressed.mp4`;
@@ -185,6 +242,7 @@ async function compressVideo() {
     fileInput.disabled = false;
     preset.disabled = false;
     bitrateInput.disabled = false;
+    speedSelect.disabled = false;
   }
 }
 
@@ -196,8 +254,7 @@ fileInput.addEventListener("change", (e) => {
 });
 
 preset.addEventListener("change", () => {
-  customWrap.style.display = preset.value === "custom" ? "block" : "block";
-  if (preset.value !== "custom") customWrap.style.display = "none";
+  customWrap.style.display = preset.value === "custom" ? "block" : "none";
 });
 
 compressBtn.addEventListener("click", compressVideo);
@@ -214,11 +271,20 @@ resetBtn.addEventListener("click", () => {
   logEl.textContent = "Ready.";
   downloadLink.style.display = "none";
   compressBtn.disabled = true;
+  speedSelect.value = "1";
 
   if (compressedBlobUrl) {
     URL.revokeObjectURL(compressedBlobUrl);
     compressedBlobUrl = null;
   }
+
+  if (originalBlobUrl) {
+    URL.revokeObjectURL(originalBlobUrl);
+    originalBlobUrl = null;
+  }
+
+  previewVideo.removeAttribute("src");
+  previewVideo.load();
 });
 
 ["dragenter", "dragover"].forEach((evt) => {

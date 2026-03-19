@@ -54,10 +54,24 @@
                 <input id="bitrate" type="number" min="250" max="12000" value="1800" />
               </div>
 
+              <div>
+                <label for="speed">Playback speed</label>
+                <select id="speed">
+                  <option value="0.5">0.5x</option>
+                  <option value="0.75">0.75x</option>
+                  <option value="1" selected>1.0x (Normal)</option>
+                  <option value="1.25">1.25x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="2">2.0x</option>
+                  <option value="3">3.0x</option>
+                </select>
+              </div>
+
               <div class="helper-box">
                 Recommended:
                 <strong>Balanced compression</strong> for general use,
                 <strong>Strong compression</strong> for smaller sharing size.
+                You can also change the <strong>playback speed</strong> before downloading.
               </div>
 
               <div class="row action-row">
@@ -71,7 +85,7 @@
             <div class="section-head">
               <div>
                 <h2>Compression result</h2>
-                <p>Track the file size reduction and download the output.</p>
+                <p>Track the file size reduction, preview the output, and download the final video.</p>
               </div>
               <div class="pill">Ready for Vercel</div>
             </div>
@@ -93,6 +107,17 @@
                 <span>Reduction</span>
                 <strong id="reduction">-</strong>
               </div>
+            </div>
+
+            <div>
+              <label>Preview</label>
+              <video
+                id="previewVideo"
+                class="preview-video"
+                controls
+                playsinline
+                preload="metadata"
+              ></video>
             </div>
 
             <div>
@@ -121,7 +146,6 @@
         </section>
 
         <footer class="footer">
-          
           <div class="credit">Developed by IT John Mark ❤️</div>
         </footer>
       </main>
