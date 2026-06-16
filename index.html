@@ -4,479 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JCO Video Size Compressor</title>
-    
-    <!-- Google Fonts: Plus Jakarta Sans for a very modern, geometric tech feel -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script type="module" src="/src/main.js"></script>
-
-    <style>
-      /* Dark Theme Variables */
-      :root {
-        --bg-main: #050505;
-        --bg-panel: rgba(255, 255, 255, 0.03);
-        --border-glass: rgba(255, 255, 255, 0.08);
-        --text-primary: #ffffff;
-        --text-secondary: #a1a1aa;
-        --accent-glow: #8b5cf6;
-        --accent-gradient: linear-gradient(135deg, #8b5cf6, #3b82f6);
-        --accent-gradient-hover: linear-gradient(135deg, #7c3aed, #2563eb);
-        --radius-lg: 24px;
-        --radius-md: 12px;
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: var(--bg-main);
-        background-image: 
-          radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
-          radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.08), transparent 25%);
-        color: var(--text-primary);
-        line-height: 1.6;
-        min-height: 100vh;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      /* Layout */
-      .app {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 4rem 1.5rem;
-      }
-
-      /* Hero Section */
-      .hero {
-        text-align: center;
-        margin-bottom: 4rem;
-        position: relative;
-      }
-
-      .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border-glass);
-        padding: 0.5rem 1.25rem;
-        border-radius: 99px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--text-secondary);
-        margin-bottom: 1.5rem;
-        backdrop-filter: blur(10px);
-      }
-
-      .hero-badge::before {
-        content: "";
-        display: block;
-        width: 8px;
-        height: 8px;
-        background: #10b981;
-        border-radius: 50%;
-        box-shadow: 0 0 10px #10b981;
-      }
-
-      .hero h1 {
-        font-size: 3.5rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        margin-bottom: 1rem;
-        background: linear-gradient(to right, #fff, #a1a1aa);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .hero-text {
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-        font-size: 1.15rem;
-      }
-
-      /* Grid Layout */
-      .layout {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        gap: 2rem;
-      }
-
-      @media (max-width: 900px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-      }
-
-      /* Frosted Glass Panels */
-      .panel {
-        background: var(--bg-panel);
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-lg);
-        padding: 2.5rem;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-      }
-
-      .panel-header h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-      }
-
-      .panel-header p {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-      }
-
-      /* Cyber Dropzone */
-      .dropzone {
-        position: relative;
-        border: 2px dashed rgba(139, 92, 246, 0.3);
-        border-radius: var(--radius-md);
-        padding: 3rem 2rem;
-        text-align: center;
-        background: rgba(139, 92, 246, 0.02);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-      }
-
-      .dropzone:hover {
-        border-color: rgba(139, 92, 246, 0.8);
-        background: rgba(139, 92, 246, 0.05);
-        box-shadow: 0 0 30px rgba(139, 92, 246, 0.1);
-      }
-
-      .dropzone input[type="file"] {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-        z-index: 10;
-      }
-
-      .drop-icon {
-        color: #8b5cf6;
-        margin-bottom: 1.5rem;
-        display: inline-flex;
-        background: rgba(139, 92, 246, 0.1);
-        padding: 1rem;
-        border-radius: 50%;
-      }
-
-      .drop-icon svg {
-        width: 32px;
-        height: 32px;
-      }
-
-      .drop-title {
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .drop-subtitle {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-      }
-
-      /* Forms & Inputs */
-      .form-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #d4d4d8;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      select, input[type="number"] {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--border-glass);
-        color: white;
-        padding: 1rem;
-        border-radius: var(--radius-md);
-        font-family: inherit;
-        font-size: 1rem;
-        outline: none;
-        transition: all 0.2s;
-        appearance: none;
-      }
-
-      select:focus, input[type="number"]:focus {
-        border-color: #8b5cf6;
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-      }
-
-      /* Glowing Buttons */
-      .btn {
-        padding: 1rem 2rem;
-        border-radius: var(--radius-md);
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: none;
-        text-decoration: none;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .btn-primary {
-        background: var(--accent-gradient);
-        color: white;
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-      }
-
-      .btn-primary:hover:not(:disabled) {
-        background: var(--accent-gradient-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
-      }
-
-      .btn-primary:disabled {
-        background: #27272a;
-        color: #71717a;
-        box-shadow: none;
-        cursor: not-allowed;
-      }
-
-      .btn-secondary {
-        background: transparent;
-        border: 1px solid var(--border-glass);
-        color: white;
-      }
-
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .button-row {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-      
-      .button-row .btn-primary {
-        flex: 2;
-      }
-      
-      .button-row .btn-secondary {
-        flex: 1;
-      }
-
-      /* Futuristic Stats Grid */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-      }
-
-      .stat-card {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--border-glass);
-        padding: 1.25rem;
-        border-radius: var(--radius-md);
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: var(--accent-gradient);
-        border-radius: 4px 0 0 4px;
-      }
-
-      .stat-card span {
-        font-size: 0.75rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        font-weight: 700;
-        letter-spacing: 1px;
-      }
-
-      .stat-card strong {
-        font-size: 1.1rem;
-        color: #fff;
-        word-break: break-all;
-      }
-
-      /* Media Player */
-      .preview-video {
-        width: 100%;
-        border-radius: var(--radius-md);
-        background: #000;
-        border: 1px solid var(--border-glass);
-        aspect-ratio: 16/9;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      }
-
-      /* Progress Bar */
-      .progress-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 99px;
-        height: 10px;
-        overflow: hidden;
-        border: 1px solid var(--border-glass);
-      }
-
-      .progress-fill {
-        background: var(--accent-gradient);
-        height: 100%;
-        width: 0%;
-        transition: width 0.2s ease;
-        position: relative;
-      }
-
-      /* Animated shine on progress bar */
-      .progress-fill::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.3) 50%,
-          rgba(255, 255, 255, 0) 100%
-        );
-        animation: shimmer 1.5s infinite;
-      }
-
-      @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-      }
-
-      .progress-text {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        text-align: right;
-        margin-top: 0.5rem;
-        font-variant-numeric: tabular-nums;
-      }
-
-      /* Terminal Style Log */
-      .log {
-        background: #000;
-        color: #34d399;
-        padding: 1.25rem;
-        border-radius: var(--radius-md);
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 0.85rem;
-        height: 120px;
-        overflow-y: auto;
-        border: 1px solid rgba(52, 211, 153, 0.2);
-        white-space: pre-wrap;
-      }
-
-      .download-btn {
-        width: 100%;
-      }
-
-      .footer {
-        text-align: center;
-        margin-top: 5rem;
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-        border-top: 1px solid var(--border-glass);
-        padding-top: 2rem;
-      }
-    </style>
   </head>
   <body>
     <main class="app">
       <section class="hero">
-        <div class="hero-badge">Browser-Engine Ready</div>
-        <h1>JCO Video Compressor</h1>
+        <div class="hero-badge">Simple • Fast • Browser-based</div>
+        <h1>JCO Video Size Compressor</h1>
         <p class="hero-text">
-          Studio-grade compression running entirely inside your browser. Drop a file, dial in your settings, and render without servers.
+          Compress, preview, adjust playback speed, and download your final video
+          in a clean and easy workflow.
         </p>
       </section>
 
       <section class="layout">
-        <!-- Configuration Panel -->
-        <div class="panel">
+        <div class="panel panel-main">
           <div class="panel-header">
-            <h2>Configuration</h2>
-            <p>Set your input parameters and encoding presets.</p>
+            <div>
+              <h2>Upload & Settings</h2>
+              <p>Select your file and choose the compression options.</p>
+            </div>
           </div>
 
           <div id="dropzone" class="dropzone">
             <input id="fileInput" type="file" accept="video/*" />
-            <div class="drop-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-              </svg>
-            </div>
-            <div class="drop-title">Drag & Drop Media</div>
-            <div class="drop-subtitle">or click to browse local files</div>
+            <div class="drop-icon">↑</div>
+            <div class="drop-title">Drop your video here</div>
+            <div class="drop-subtitle">or choose a file from your device</div>
+            <button class="btn btn-primary" id="chooseBtn" type="button">Choose Video</button>
           </div>
 
           <div class="form-grid">
             <div class="field">
-              <label for="preset">Encoding Preset</label>
+              <label for="preset">Compression preset</label>
               <select id="preset">
                 <option value="waybill" selected>Waybill / High Readability</option>
-                <option value="light">Lossless (Light Compression)</option>
-                <option value="balanced">Balanced Ratio</option>
-                <option value="strong">Aggressive (Smallest Size)</option>
-                <option value="custom">Custom Bitrate Override</option>
+                <option value="light">Light compression (best quality)</option>
+                <option value="balanced">Balanced compression</option>
+                <option value="strong">Strong compression (smaller size)</option>
+                <option value="custom">Custom bitrate</option>
               </select>
             </div>
 
             <div id="customWrap" class="field" style="display:none;">
-              <label for="bitrate">Bitrate Target (kbps)</label>
+              <label for="bitrate">Custom bitrate (kbps)</label>
               <input id="bitrate" type="number" min="250" max="12000" value="1800" />
             </div>
 
             <div class="field">
-              <label for="speed">Time Remapping</label>
+              <label for="speed">Playback speed</label>
               <select id="speed">
-                <option value="0.5">0.5x (Slow Motion)</option>
+                <option value="0.5">0.5x</option>
                 <option value="0.75">0.75x</option>
-                <option value="1" selected>1.0x (Realtime)</option>
+                <option value="1" selected>1.0x (Normal)</option>
                 <option value="1.25">1.25x</option>
                 <option value="1.5">1.5x</option>
-                <option value="2">2.0x (Timelapse)</option>
+                <option value="2">2.0x</option>
                 <option value="3">3.0x</option>
                 <option value="4">4.0x</option>
                 <option value="5">5.0x</option>
@@ -487,44 +70,51 @@
             </div>
           </div>
 
+          <div class="tip-box">
+            Best for labels and text-heavy clips:
+            <strong>Waybill / High Readability</strong>.
+          </div>
+
           <div class="button-row">
             <button id="compressBtn" class="btn btn-primary" type="button" disabled>
-              Initialize Engine
+              Compress Video
             </button>
             <button id="resetBtn" class="btn btn-secondary" type="button">
-              Clear
+              Reset
             </button>
           </div>
         </div>
 
-        <!-- Output & Analytics Panel -->
-        <div class="panel">
+        <div class="panel panel-side">
           <div class="panel-header">
-            <h2>Output Terminal</h2>
-            <p>Real-time analytics and video playback.</p>
+            <div>
+              <h2>Result</h2>
+              <p>Preview your processed video before downloading.</p>
+            </div>
+            <div class="status-pill">Ready for Vercel</div>
           </div>
 
           <div class="stats-grid">
             <div class="stat-card">
-              <span>Source File</span>
-              <strong id="fileName">Awaiting Input...</strong>
+              <span>Selected file</span>
+              <strong id="fileName">None</strong>
             </div>
             <div class="stat-card">
-              <span>Original Size</span>
+              <span>Original size</span>
               <strong id="originalSize">-</strong>
             </div>
             <div class="stat-card">
-              <span>Render Size</span>
+              <span>Compressed size</span>
               <strong id="compressedSize">-</strong>
             </div>
             <div class="stat-card">
-              <span>Optimization</span>
+              <span>Reduction</span>
               <strong id="reduction">-</strong>
             </div>
           </div>
 
           <div class="field">
-            <label>Live Preview</label>
+            <label>Preview</label>
             <video
               id="previewVideo"
               class="preview-video"
@@ -535,16 +125,16 @@
           </div>
 
           <div class="field">
-            <label>Render Progress</label>
+            <label>Progress</label>
             <div class="progress-track">
               <div id="progressBar" class="progress-fill"></div>
             </div>
-            <div id="progressText" class="progress-text">Awaiting task</div>
+            <div id="progressText" class="progress-text">Idle</div>
           </div>
 
           <div class="field">
-            <label>System Log</label>
-            <div id="log" class="log">> Engine ready. Waiting for user input...</div>
+            <label>Activity log</label>
+            <div id="log" class="log">Ready.</div>
           </div>
 
           <a
@@ -553,13 +143,17 @@
             style="display:none;"
             download="compressed.mp4"
           >
-            Export Media
+            Download Compressed Video
           </a>
+
+          <div class="note">
+            Large videos may take longer because processing runs inside the browser.
+          </div>
         </div>
       </section>
 
       <footer class="footer">
-        <div>Engineered by IT John Mark</div>
+        <div class="credit">Developed by IT John Mark ❤️</div>
       </footer>
     </main>
   </body>
